@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 class Post(models.Model):  # models 모듈의 Model 클래스 사용
@@ -27,3 +26,6 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     __init__(): 객체를 만들 때 처음 실행되는 초기화 메소드. 생성자로 인식되어 객체가 생성되는 시점에 자동으로 호출 됨.
     
     '''
+
+    def get_absolute_url(self):
+        return f'/blog/{self.pk}/'
