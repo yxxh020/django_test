@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
+
 from .models import Post
 
 
@@ -15,19 +16,19 @@ from .models import Post
 #         }
 #     )
 #
-def single_post_page(request, pk):
-    post = Post.objects.get(pk=pk)
-
-    return render(
-        request,
-        'blog/single_post_page.html',
-        {
-            'post': post,
-        }
-    )
+# def single_post_page(request, pk):
+#     post = Post.objects.get(pk=pk)
+#
+#     return render(
+#         request,
+#         'blog/post_detail.html',
+#         {
+#             'post': post,
+#         }
+#     )
 
 # CBV(class based view 방식)
-class PostList(ListView):
+class PostList(ListView):  # ListView: 여러 레코드를 목록 형태로 보여줄 때 사용
     model = Post
     # template_name = 'blog/post_list.html'
     ordering = '-pk'
@@ -38,3 +39,6 @@ class PostList(ListView):
     2) template: 모델명_list.html
         ex) post_list.html
     '''
+
+class PostDetail(DetailView):
+    model = Post

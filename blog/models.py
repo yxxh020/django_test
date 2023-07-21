@@ -14,9 +14,10 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     auto_now_add: 처음 생성될 때( 새로운 레코드가 DB에 추가될 때) 한번만 값을 할당
     auto_created: 공식 문서에도 설명 없음. 사용자가 create 시간 설정 가능
     '''
-#     author:
 
-    def __str__(self): #제목에 object로 나와서 문자열로 변환 뒤 출력
+    #     author:
+
+    def __str__(self):  # 제목에 object로 나와서 문자열로 변환 뒤 출력
         return f'[{self.pk}] {self.title} ' f'{self.updated_at}'[:-7]
 
     '''
