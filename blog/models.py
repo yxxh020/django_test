@@ -2,18 +2,18 @@ from django.db import models
 from django.utils import timezone
 
 
-class Post(models.Model): #models모듈의 Model 클래스 사용
+class Post(models.Model):  # models 모듈의 Model 클래스 사용
     title = models.CharField(max_length=30)
     content = models.TextField()
 
-    created_at = models.DateTimeField(auto_now_add=True) #처음 작성 시간 자동저장
-    updated_at = models.DateTimeField(auto_now=True) # 수정시간 자동 저장
+    created_at = models.DateTimeField(auto_now_add=True)  # 처음 작성 시간 자동 저장
+    updated_at = models.DateTimeField(auto_now=True)  # 수정 시간 자동 저장
 
     '''
     DateTimeField 옵션
     auto_now: 모델 객체가 저장될 때마다 현재 시간으로 업데이트
     auto_now_add: 처음 생성될 때( 새로운 레코드가 DB에 추가될 때) 한번만 값을 할당
-    auto_created: 공식문서에도 설명 없음. 사용자가 create 시간 설정 가능
+    auto_created: 공식 문서에도 설명 없음. 사용자가 create 시간 설정 가능
     '''
 #     author:
 
