@@ -1,11 +1,12 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
-from .models import Post
+
+from blog.models import Post
 
 
 # Create your tests here.
 class TestView(TestCase):
-    # def test_post_lsit(self):
+    # def test_post_list(self):
     #     self.assertEqual(2, 2)  # 입력값들이 같은지 검증
     def setUp(self):
         self.client = Client()
@@ -83,6 +84,7 @@ class TestView(TestCase):
         self.assertIn(post_001.title, post_area.text)
 
         # 2.5. 첫 번째 포스트의 작성자(author)가 포스트 영역에 있다(아직 구현 no)
+        # self.assertIn(post_001.author, post_area.text)
 
         # 2.6. 첫 번째 포스트의 내용(content)이 포스트 영역에 있다
         self.assertIn(post_001.content, post_area.text)
