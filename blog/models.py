@@ -22,7 +22,11 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     auto_created: 공식 문서에도 설명 없음. 사용자가 create 시간 설정 가능
     '''
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    '''
+    on_delete=models.CASCADE: 사용자가 db에서 삭제될 때 작성한 post도 같이 삭제
+    on_delete=models.SET_NULL: 사용자가 삭제될 때 author는 null값으로 변환
+    '''
 
     def __str__(self):  # 제목에 object로 나와서 문자열로 변환 뒤 출력
         return f'[{self.pk}] {self.title}  :: {self.author} :: ' f'{self.updated_at}'[:-7]
