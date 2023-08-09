@@ -1,5 +1,6 @@
 import os.path
 
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -21,10 +22,10 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     auto_created: 공식 문서에도 설명 없음. 사용자가 create 시간 설정 가능
     '''
 
-    #     author:
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):  # 제목에 object로 나와서 문자열로 변환 뒤 출력
-        return f'[{self.pk}] {self.title} ' f'{self.updated_at}'[:-7]
+        return f'[{self.pk}] {self.title}  :: {self.author} :: ' f'{self.updated_at}'[:-7]
 
     '''
     자주 쓰는 내장 함수

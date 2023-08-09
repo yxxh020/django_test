@@ -31,7 +31,6 @@ class TestView(TestCase):
 
 
 
-
     def test_post_list(self):
         # 1.1 포스트 목록 페이지를 가져온다.
         response = self.client.get('/blog/')
