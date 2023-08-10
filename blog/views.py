@@ -27,7 +27,7 @@ from .models import Post, Category
 #         }
 #     )
 def category_page(request, slug): # FBV방식은 request 꼭
-    category = Category.objects.get(slug=slug) # 함수의 인자로 받은 slug와 동일한 slug를 가진 카테고리 불러옴
+    # category = Category.objects.get(slug=slug) # 함수의 인자로 받은 slug와 동일한 slug를 가진 카테고리 불러옴
 
     if slug == 'no_category':
         category = '미분류'
