@@ -1,7 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block main_area %}
-    <h1>Blog</h1>
+    <h1>Blog {% if category %} <span class="badge round-pill badge-warning">{{ category }}</span>{% endif %}</h1>
 
     <!-- Blog Post -->
     {% if post_list.exists %}

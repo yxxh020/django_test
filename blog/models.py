@@ -8,12 +8,16 @@ class Category(models.Model):
     slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
 
     '''
-    SlugField: 사람이 읽을 수 있는 텍스트로 고유 url을 만들 때 사용
+    SlugField: 이미 얻은 데이터를 사용하여 사람이 읽을 수 있는 텍스트로 고유 url을 만들 때 사용
+                ex) 기사 제목을 사용하여 url 생성 -> 이렇게-생성-됨
     allow_unicode: 한글 설정 가능 하도록
     '''
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/category/{self.slug}/'
 
     class Meta:
         verbose_name_plural = 'Categories'  # category 복수형 직접 지정
