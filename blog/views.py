@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 
-from .models import Post
+from .models import Post, Category
 
 
 # FBV(function based view 방식)
@@ -29,7 +29,7 @@ from .models import Post
 
 # CBV(class based view 방식)
 class PostList(ListView):  # ListView: 여러 레코드를 목록 형태로 보여줄 때 사용
-    model = Post
+    model = Post  # 선언하면 자동으로 post_list = Post.objects.all() 명령함
     # template_name = 'blog/post_list.html'
     ordering = '-pk'
 
@@ -40,5 +40,12 @@ class PostList(ListView):  # ListView: 여러 레코드를 목록 형태로 보�
         ex) post_list.html
     '''
 
+    def get_context_data(self, **kwargs):
+        context = super(PostList, self).get_context_data()  # super(): 부모클래스의 메소드 사용할 수 있게
+        context['categories'] = Category.objects.all()  # 모든 카테고리를 가져와 'categories' 키에 연결
+        context['no_category_post_count'] = Post.objects.filter(category=None).count()  # 미분류 포스트 카운트
+        return context
+
 class PostDetail(DetailView):
     model = Post
+

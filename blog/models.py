@@ -3,6 +3,20 @@ import os.path
 from django.contrib.auth.models import User
 from django.db import models
 
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    '''
+    SlugField: 사람이 읽을 수 있는 텍스트로 고유 url을 만들 때 사용
+    allow_unicode: 한글 설정 가능 하도록
+    '''
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Categories'  # category 복수형 직접 지정
 
 class Post(models.Model):  # models 모듈의 Model 클래스 사용
     title = models.CharField(max_length=30)
@@ -27,6 +41,8 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     on_delete=models.CASCADE: 사용자가 db에서 삭제될 때 작성한 post도 같이 삭제
     on_delete=models.SET_NULL: 사용자가 삭제될 때 author는 null값으로 변환
     '''
+
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):  # 제목에 object로 나와서 문자열로 변환 뒤 출력
         return f'[{self.pk}] {self.title}  :: {self.author} :: ' f'{self.updated_at}'[:-7]
