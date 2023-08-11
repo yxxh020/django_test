@@ -22,6 +22,16 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'  # category 복수형 직접 지정
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/tag/{self.slug}'
+
 class Post(models.Model):  # models 모듈의 Model 클래스 사용
     title = models.CharField(max_length=30)
     hook_text = models.CharField(max_length=100, blank=True)
@@ -47,6 +57,7 @@ class Post(models.Model):  # models 모듈의 Model 클래스 사용
     '''
 
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    tags = models.ManyToManyField(Tag, blank=True) # many to many 는 기본으로 null=True
 
     def __str__(self):  # 제목에 object로 나와서 문자열로 변환 뒤 출력
         return f'[{self.pk}] {self.title}  :: {self.author} :: ' f'{self.updated_at}'[:-7]
