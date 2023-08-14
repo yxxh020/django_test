@@ -14,6 +14,8 @@ class TestView(TestCase):
         # 유저 생성
         self.user_tomato = User.objects.create_user(username='tomato', password='thvmxmspt1')
         self.user_orange = User.objects.create_user(username='orange', password='thvmxmspt1')
+        self.user_orange.is_staff = True
+        self.user_orange.save()
 
         self.category_programming = Category.objects.create(name='programming', slug='programming')
         self.category_music = Category.objects.create(name='music', slug='music')
@@ -50,9 +52,13 @@ class TestView(TestCase):
         response = self.client.get('/blog/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
-        # 로그인
+        # staff가 아닌 일반 사용자가 로그인한 경우( 글 못올림)
         self.client.login(username='tomato', password='thvmxmspt1')
+        response = self.client.get('/blog/create_post/')
+        self.assertNotEqual(response.status_code, 200)
 
+        # staff가 로그인
+        self.client.login(username='orange', password='thvmxmspt1')
         response = self.client.get('/blog/create_post/')
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -70,7 +76,7 @@ class TestView(TestCase):
         )
         last_post = Post.objects.last()
         self.assertEqual(last_post.title, "Post Form 만들기")
-        self.assertEqual(last_post.author.username, "tomato")
+        self.assertEqual(last_post.author.username, "orange")
 
     def test_tag_page(self):
         response = self.client.get(self.tag_hello.get_absolute_url())

@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
@@ -94,14 +94,17 @@ class PostDetail(DetailView):
         context['no_category_post_count'] = Post.objects.filter(category=None).count()  # 미분류 포스트 카운트
         return context
 
-class PostCreate(LoginRequiredMixin, CreateView): # Mixin 사용하면 다른 클래스의 메서드 추가 가능
+class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView): # Mixin 사용하면 다른 클래스의 메서드 추가 가능
     model = Post
     fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category']
+
+    def test_func(self): # 작성 페이지에 접근 가능한 사용자를 superuser(최고 관리자) or staff로 제한
+        return self.request.user.is_superuser or self.request.user.is_staff
 
     # CreateView 기본함수 form_valid를 사용해서 author field 자동으로 채우기
     def form_valid(self, form): # 방문자가 form에 담아 보낸 정보를 포스트로 만들어서 고유 경로로 redirect
         current_user = self.request.user
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
             form.instance.author = current_user
             return super(PostCreate, self).form_valid(form)
         else:
