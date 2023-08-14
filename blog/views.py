@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView
 
 from .models import Post, Category, Tag
 
@@ -92,3 +93,16 @@ class PostDetail(DetailView):
         context['categories'] = Category.objects.all()  # 모든 카테고리를 가져와 'categories' 키에 연결
         context['no_category_post_count'] = Post.objects.filter(category=None).count()  # 미분류 포스트 카운트
         return context
+
+class PostCreate(LoginRequiredMixin, CreateView): # Mixin 사용하면 다른 클래스의 메서드 추가 가능
+    model = Post
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category']
+
+    # CreateView 기본함수 form_valid를 사용해서 author field 자동으로 채우기
+    def form_valid(self, form): # 방문자가 form에 담아 보낸 정보를 포스트로 만들어서 고유 경로로 redirect
+        current_user = self.request.user
+        if current_user.is_authenticated:
+            form.instance.author = current_user
+            return super(PostCreate, self).form_valid(form)
+        else:
+            return redirect('/blog/')
