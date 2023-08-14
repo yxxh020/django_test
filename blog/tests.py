@@ -46,10 +46,24 @@ class TestView(TestCase):
         )
         self.post_003.tags.add(self.tag_python_kor)
         self.post_003.tags.add(self.tag_weather)
+    def test_update_post(self):
+        update_post_url = f'/blog/update_post/{self.post_003.pk}/'
+
+        # 로그인하지 않은 경우
+        response = self.client.get(update_post_url)
+        self.assertNotEqual(response.status_code, 200)
+
+
+        # 로그인 했지만 해당 작성자가 아닌경우
+        self.assertNotEqual(self.post_003.author, self.user_tomato)
+        self.client.login(
+            username=self.user_tomato.username,
+            password='thvmxmspt1'
+        )
 
     def test_create_post(self):
         # 로그인하지 않으면 status code가 200되면 안됨.
-        response = self.client.get('/blog/create_post/')
+        response a= self.client.get('/blog/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
         # staff가 아닌 일반 사용자가 로그인한 경우( 글 못올림)
