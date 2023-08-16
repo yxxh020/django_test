@@ -76,20 +76,29 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Edit Post', main_area.text)
 
+        tag_str_input = main_area.find('input', id='id_tags_str')
+        self.assertTrue(tag_str_input)
+        self.assertIn('python; weather', tag_str_input.attrs['value'])
+
         response = self.client.post(
             update_post_url,
             {
                 'title': '세 번째 포스트를 수정했습니다.',
-                'content': '수정한 포스트 내용입니다.',
-                'category': self.category_music.pk
+                'content': '수정한 포스트 내용입니다~',
+                'category': self.category_music.pk,
+                'tags_str': '파이썬; 한글 태그, eng tag'
             },
             follow=True  # post요청 후 서버에서 페이지가 redirect됬을때 따라가도록
         )
         soup = BeautifulSoup(response.content, 'html.parser')
         main_area = soup.find('div', id='main-area')
         self.assertIn('세 번째 포스트를 수정했습니다.', main_area.text)
-        self.assertIn('수정한 포스트 내용입니다.', main_area.text)
+        self.assertIn('수정한 포스트 내용입니다~', main_area.text)
         self.assertIn(self.category_music.name, main_area.text)
+        self.assertIn('파이썬', main_area.text)
+        self.assertIn('한글 태그', main_area.text)
+        self.assertIn('eng tag', main_area.text)
+        self.assertNotIn('python', main_area.text)
 
     def test_create_post(self):
         # 로그인하지 않으면 status code가 200되면 안됨.
