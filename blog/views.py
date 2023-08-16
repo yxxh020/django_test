@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
+from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from .models import Post, Category, Tag
@@ -107,7 +108,29 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView): # Mixin �
         current_user = self.request.user
         if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
             form.instance.author = current_user
-            return super(PostCreate, self).form_valid(form)
+            response = super(PostCreate, self).form_valid(form)
+
+            '''
+            form_valid() 함수: 폼에 들어온 값으로 모델에 해당하는 인스턴스를 만들어 DB에 저장하고 그 인스턴스 경로로 리다이렉트 해줌.
+                Post와 Tag모델은 다대다(M:N)관계이므로 태그를 추가하려면 미리 포스트가 db에 있어야함.
+            '''
+
+            tags_str = self.request.POST.get('tags_str')  # post방식으로 전달된거 받기
+            if tags_str:
+                tags_str = tags_str.strip()  # 앞뒤 공백 제거
+
+                tags_str = tags_str.replace(',', ';')  # 쉼표를 세미콜론으로 구분자로 처리되게 변경
+                tags_list = tags_str.split(';')
+
+                for t in tags_list:
+                    t = t.strip()
+                    tag, is_tag_created = Tag.objects.get_or_create(name=t) # get_or_create(): Tag 모델 인스턴스, 새로 생성됬는지 bool값 리턴
+                    if is_tag_created:  # 태그를 새로 생성한다면 slug값도 같이 생성
+                        tag.slug = slugify(t, allow_unicode=True)
+                        tag.save()
+                    self.object.tags.add(tag)  # 새로만든 포스트의 tags 필드에 추가
+
+            return response  # 작업 완료 후 새로 만든 포스트 페이지로 이동
         else:
             return redirect('/blog/')
 
