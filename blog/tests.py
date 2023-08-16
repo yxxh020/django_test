@@ -60,10 +60,40 @@ class TestView(TestCase):
             username=self.user_tomato.username,
             password='thvmxmspt1'
         )
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 403)
+
+        # 작성자가 접근하는 경우
+        self.client.login(
+            username=self.post_003.author.username,
+            password='thvmxmspt1'
+        )
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertEqual('Edit Post - Blog', soup.title.text)
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Edit Post', main_area.text)
+
+        response = self.client.post(
+            update_post_url,
+            {
+                'title': '세 번째 포스트를 수정했습니다.',
+                'content': '수정한 포스트 내용입니다.',
+                'category': self.category_music.pk
+            },
+            follow=True  # post요청 후 서버에서 페이지가 redirect됬을때 따라가도록
+        )
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('세 번째 포스트를 수정했습니다.', main_area.text)
+        self.assertIn('수정한 포스트 내용입니다.', main_area.text)
+        self.assertIn(self.category_music.name, main_area.text)
 
     def test_create_post(self):
         # 로그인하지 않으면 status code가 200되면 안됨.
-        response a= self.client.get('/blog/create_post/')
+        response = self.client.get('/blog/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
         # staff가 아닌 일반 사용자가 로그인한 경우( 글 못올림)

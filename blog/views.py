@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from .models import Post, Category, Tag
 
@@ -109,3 +110,20 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView): # Mixin �
             return super(PostCreate, self).form_valid(form)
         else:
             return redirect('/blog/')
+
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    model = Post
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category', 'tags']
+
+    template_name = 'blog/post_update_form.html'  # default template name은 모델명(post)_form.html인데 PostCreate 메서드랑 겹쳐서 직접 지정
+    '''
+    dispatch(): get방식 요청 인지 post방식 요청인지 판단
+        get방식인 경우: 폼 페이지 보여줌
+        post방식인 경우: 받은 폼이 유효한지 확인후 db에 내용 저장
+    '''
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and request.user == self.get_object().author: # 유저 아이디가 author필드와 동일한 경우
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # 권한 없음 403
+
