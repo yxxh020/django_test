@@ -23,6 +23,7 @@ urlpatterns = [
     path("blog/", include('blog.urls')),
     path("admin/", admin.site.urls),  # 자동 생성
     path("markdownx/", include('markdownx.urls')),
+    path("accounts/", include('allauth.urls')),
     path("", include('single_pages.urls')),
 ]
 
