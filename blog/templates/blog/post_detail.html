@@ -25,16 +25,18 @@
         {% if user.is_authenticated and user == post.author %}
             <a href="/blog/update_post/{{ post.pk }}/" class="btn btn-info btn-sm float-right" role="button">
                 <i class="fas fa-pen"></i> Edit Post</a>
+            <br/>
         {% endif %}
         <!-- Preview image figure-->
         {% if post.head_image %}
+
             <figure class="mb-4"><img class="img-fluid rounded" src="{{ post.head_image.url }}" alt="..." /></figure>
         {% else %}
             <img class="card-img-top" src="https://picsum.photos/seed/{{ post.id }}/800/200" alt="random_image">
         {% endif %}
         <!-- Post content-->
         <section class="mb-5">
-            <p>{{ post.content }}</p>
+            <p>{{ post.get_content_markdown | safe }}</p> <!-- safe: html escaping 방지 필터(html 코드가 노출되지 않도록)-->
                 <!--tag-->
                 {% if post.tags.exists %}
                     <i class="fas fa-duotone fa-hashtag"></i>

@@ -22,6 +22,7 @@ from django.urls import path, include
 urlpatterns = [
     path("blog/", include('blog.urls')),
     path("admin/", admin.site.urls),  # 자동 생성
+    path("markdownx/", include('markdownx.urls')),
     path("", include('single_pages.urls')),
 ]
 
